@@ -1,19 +1,17 @@
-// src/auth.ts
+// src/auth.js
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import { client } from "@/sanity/lib/client";
 import { writeClient } from "@/sanity/lib/write-client";
 import { AUTHOR_BY_GITHUB_ID_QUERY } from "@/sanity/lib/queries";
 
-const nextAuthHandler = NextAuth({
-  // ⚠️ call the provider factory with your env vars
+const authOptions = {
   providers: [
     GitHubProvider({
-      clientId:     process.env.GITHUB_CLIENT_ID,
+      clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
     }),
   ],
-
   callbacks: {
     async signIn({ user: { name, email, image }, profile: { id, login, bio } }) {
       const existing = await client
@@ -45,11 +43,11 @@ const nextAuthHandler = NextAuth({
     },
 
     async session({ session, token }) {
-      session.id = token.id ;
+      session.id = token.id;
       return session;
     },
   },
-});
+};
 
-// destructure exactly what NextAuth gives you:
-export const { handlers, auth, signIn, signOut } = nextAuthHandler;
+const handler = NextAuth(authOptions);
+export default handler;
