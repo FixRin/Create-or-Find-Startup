@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { auth, signOut, signIn } from "@/auth";
+import { auth, signOut, signIn } from "next-auth/react";
 import { BadgePlus, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import logo from '../app/(root)/public/logo.png'
@@ -26,7 +26,7 @@ const Navbar = async () => {
                 action={async () => {
                   "use server";
 
-                  await signOut({ redirectTo: "/" });
+                  await signOut({ redirect: "/" });
                 }}
               >
                 <button type="submit">

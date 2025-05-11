@@ -49,4 +49,5 @@ export const authOptions = {
 // NextAuth returns a single handler function—not an object.
 // Export that as the default.
 const handler = NextAuth(authOptions);
+
 export default handler;
