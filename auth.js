@@ -1,14 +1,14 @@
-// src/auth.js
+// src/auth.ts
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import { client } from "@/sanity/lib/client";
 import { writeClient } from "@/sanity/lib/write-client";
 import { AUTHOR_BY_GITHUB_ID_QUERY } from "@/sanity/lib/queries";
 
-const authOptions = {
+export const authOptions = {
   providers: [
     GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID,
+      clientId:     process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
     }),
   ],
@@ -17,7 +17,6 @@ const authOptions = {
       const existing = await client
         .withConfig({ useCdn: false })
         .fetch(AUTHOR_BY_GITHUB_ID_QUERY, { id });
-
       if (!existing) {
         await writeClient.create({
           _type:   "author",
@@ -31,7 +30,6 @@ const authOptions = {
       }
       return true;
     },
-
     async jwt({ token, account, profile }) {
       if (account && profile) {
         const user = await client
@@ -41,13 +39,14 @@ const authOptions = {
       }
       return token;
     },
-
     async session({ session, token }) {
-      session.id = token.id;
+      session.id = token.id ;
       return session;
     },
   },
 };
 
+// NextAuth returns a single handler function—not an object.
+// Export that as the default.
 const handler = NextAuth(authOptions);
 export default handler;
