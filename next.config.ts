@@ -1,3 +1,4 @@
+// next.config.js
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
@@ -9,11 +10,12 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
+    domains: ['avatars.githubusercontent.com'], // allow this domain
     dangerouslyAllowSVG: true,
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "*",
+        hostname: "*",  // you can even lock this down to specific hosts if you prefer
       },
     ],
   },
@@ -28,3 +30,10 @@ const nextConfig: NextConfig = {
   },
 };
 
+// wrap and export
+const sentryWebpackPluginOptions = {
+  // your Sentry options here, if any
+  silent: true,
+};
+
+export default withSentryConfig(nextConfig, sentryWebpackPluginOptions);
