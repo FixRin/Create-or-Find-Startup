@@ -34,7 +34,7 @@ const Navbar = async () => {
                   <LogOut className="size-6 sm:hidden text-red-500" />
                 </button>
               </form>
-
+{/*testing ignore it*/}
               <Link href={`/user/${session?.id}`}>
                 <Avatar className="size-10">
                   <AvatarImage
