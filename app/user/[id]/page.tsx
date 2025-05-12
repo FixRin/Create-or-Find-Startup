@@ -1,7 +1,9 @@
-import { auth } from "@/auth";
+// app/user/[id]/page.tsx
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/auth";
 import { client } from "@/sanity/lib/client";
 import { AUTHOR_BY_ID_QUERY } from "@/sanity/lib/queries";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import UserStartups from "@/components/UserStartups";
 import { Suspense } from "react";
@@ -9,10 +11,17 @@ import { StartupCardSkeleton } from "@/components/StartupCard";
 
 export const experimental_ppr = true;
 
-const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const id = (await params).id;
-  const session = await auth();
+export default async function Page({ params }: { params: { id: string } }) {
+  const { id } = params;
 
+  // Authenticate on the server
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    // Redirect to login if not authenticated
+    redirect("/login");
+  }
+
+  // Fetch user data
   const user = await client.fetch(AUTHOR_BY_ID_QUERY, { id });
   if (!user) return notFound();
 
@@ -35,14 +44,14 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
           />
 
           <p className="text-30-extrabold mt-7 text-center">
-            @{user?.username}
+            @{user.username}
           </p>
-          <p className="mt-1 text-center text-14-normal">{user?.bio}</p>
+          <p className="mt-1 text-center text-14-normal">{user.bio}</p>
         </div>
 
         <div className="flex-1 flex flex-col gap-5 lg:-mt-5">
           <p className="text-30-bold">
-            {session?.id === id ? "Your" : "All"} Startups
+            {session.id === id ? "Your" : "All"} Startups
           </p>
           <ul className="card_grid-sm">
             <Suspense fallback={<StartupCardSkeleton />}>
@@ -53,6 +62,4 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
       </section>
     </>
   );
-};
-
-export default Page;
+}
